@@ -325,6 +325,7 @@ def run_server():
 def make_parser():
     parser = ArgumentParser(
         description = __doc__,
+        epilog = 'Example: blog.py -sf (serve, stop on control+c and freeze).',
         formatter_class = RawDescriptionHelpFormatter,
     )
 
