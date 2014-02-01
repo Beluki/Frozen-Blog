@@ -3,7 +3,7 @@
 
 """
 Frozen-Blog.
-A minimal, easy to customize, static blog using MetaFiles and Frozen-Flask.
+A minimal static blog written with Frozen-Flask and MetaFiles.
 """
 
 
@@ -30,7 +30,7 @@ def errln(line):
 # Non-builtin imports:
 
 try:
-    from flask import Flask, abort, render_template
+    from flask import Flask, abort, render_template, request
     from flask_frozen import Freezer
     from MetaFiles import MetaFiles
 
@@ -95,13 +95,10 @@ DEFAULT_CONFIGURATION = {
 }
 
 
-# Targets are a bridge between MetaFiles and Flask
-# giving content a path in the blog:
-
 class Target(object):
     """
-    A Target is just a MetaFile wrapper with an additional 'path'.
-    It represents a page or a post in the blog.
+    A target is a MetaFile wrapper with an additional 'path'.
+    It represents a Post or a Page in the blog.
     """
     def __init__(self, metafile, path):
         self.metafile = metafile
@@ -117,8 +114,10 @@ class Target(object):
 
 
 class Targets(object):
-    """ Maintains a collection of Targets that can be queried by path. """
-
+    """
+    Maintains a collection of Targets that can be iterated
+    and queried by path. Subclasses decide how to load content.
+    """
     def __init__(self):
         self.targets = []
         self.targets_by_path = {}
@@ -133,23 +132,19 @@ class Targets(object):
         return self.targets_by_path.get(path)
 
 
-def metafiles_to_targets(metafiles):
+def metafiles_as_targets(metafiles):
     """
-    Load 'metafiles' and iterate Target items from them.
+    Iterate 'metafiles', yielding Target items with a 'path' from them.
+    The 'path' is the full filepath *without extension* from the
+    metafiles root, using posix separators:
     """
-    metafiles.load()
     for metafile in metafiles:
-
-        # full filepath *without extension* from the root
-        # using posix separators:
         fullbase, extension = os.path.splitext(metafile.filepath)
         path = os.path.relpath(fullbase, metafiles.root)
         path = path.replace(os.sep, posixpath.sep)
 
         yield Target(metafile, path)
 
-
-# The actual content only differs in initialization and loading:
 
 class Pages(Targets):
     """ Maintains a collection of standalone Pages in the blog. """
@@ -171,7 +166,7 @@ class Pages(Targets):
         pages = []
         pages_by_path = {}
 
-        for page in metafiles_to_targets(self.metafiles):
+        for page in metafiles_as_targets(self.metafiles):
             pages.append(page)
             pages_by_path[page.path] = page
 
@@ -194,13 +189,13 @@ class Posts(Targets):
     def load(self):
         """
         Reload all the posts in the blog and sort them by date.
-        Posts without date are skipped, considered drafts.
+        Posts without date are skipped (considered drafts).
         On errors, the previous content is preserved.
         """
         posts = []
         posts_by_path = {}
 
-        for post in metafiles_to_targets(self.metafiles):
+        for post in metafiles_as_targets(self.metafiles):
             if 'date' in post.meta:
                 posts.append(post)
                 posts_by_path[post.path] = post
@@ -212,18 +207,19 @@ class Posts(Targets):
 
 
 class Context(object):
-    """
-    Maintains the collection of pages and posts in the blog.
-    """
+    """ Maintains the collection of Pages and Posts in the blog. """
+
     def __init__(self):
         self.pages = Pages()
         self.posts = Posts()
 
     def initialize(self, config):
+        """ Configure context options from a given 'config' dictionary. """
         self.pages.initialize(config)
         self.posts.initialize(config)
 
     def load(self):
+        """ Reload all the Pages and Posts in the blog. """
         self.pages.load()
         self.posts.load()
 
@@ -238,7 +234,7 @@ class Context(object):
     @property
     def environment(self):
         """
-        Returns a dict containing all the data in pages and posts
+        Returns a dict containing all the data in Pages and Posts
         suitable for template rendering.
         """
         return dict(pages = self.pages, posts = self.posts)
@@ -259,7 +255,7 @@ blog.config.update(DEFAULT_CONFIGURATION)
 context = Context()
 
 
-# Auto-reloading:
+# Reloading:
 
 @blog.before_first_request
 def init_context():
@@ -269,7 +265,14 @@ def init_context():
 @blog.before_request
 def auto_update_context_on_debug():
     if blog.debug:
-        context.load()
+
+        # avoid reloading content on static files:
+        if request.endpoint == 'static':
+            return
+
+        # reload on explicit view requests (e.g. not favicons):
+        if request.endpoint in blog.view_functions:
+            context.load()
 
 
 # Routes:
@@ -293,7 +296,6 @@ def post(path):
 
 def run_freezer():
     """ Freeze the current site state to the output folder. """
-
     blog.config.from_pyfile('freezing.conf', silent = True)
 
     if blog.debug:
@@ -311,7 +313,6 @@ def run_freezer():
 
 def run_server():
     """ Run the local web server and watch for changes. """
-
     blog.run(host = blog.config['WWW_HOST'],
              port = blog.config['WWW_PORT'],
 
@@ -353,7 +354,7 @@ def main():
     if options.serve:
         run_server()
 
-    # check if Werkzeug is running to avoid reloading code twice,
+    # check if Werkzeug is running to avoid reloading code twice
     # in case the user issued both --serve and --freeze at the same time:
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         if options.freeze:
