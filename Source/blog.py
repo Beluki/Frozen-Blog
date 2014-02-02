@@ -295,15 +295,16 @@ def run_server():
 def make_parser():
     parser = ArgumentParser(
         description = __doc__,
-        epilog = 'Example: blog.py -sf (serve, stop on control+c and freeze).',
         formatter_class = RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument('-f', '--freeze',
+    group = parser.add_mutually_exclusive_group(required = False)
+
+    group.add_argument('-f', '--freeze',
         help = 'freeze the current site state to the output folder',
         action = 'store_true')
 
-    parser.add_argument('-s', '--serve',
+    group.add_argument('-s', '--server',
         help = 'run the local web server and watch for changes',
         action = 'store_true')
 
@@ -316,20 +317,17 @@ def main():
     parser = make_parser()
     options = parser.parse_args()
 
-    if not options.freeze and not options.serve:
+    if not options.freeze and not options.server:
         parser.print_help(sys.stderr)
         sys.exit(1)
 
     blog.config.from_pyfile('blog.conf', silent = True)
 
-    if options.serve:
+    if options.server:
         run_server()
 
-    # check if Werkzeug is running to avoid reloading code twice
-    # in case the user issued both --serve and --freeze at the same time:
-    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        if options.freeze:
-            run_freezer()
+    if options.freeze:
+        run_freezer()
 
 
 if __name__ == '__main__':
