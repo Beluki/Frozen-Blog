@@ -30,7 +30,7 @@ def errln(line):
 # Non-builtin imports:
 
 try:
-    from flask import Flask, abort, render_template, request
+    from flask import Flask, abort, render_template, render_template_string, request
     from flask_frozen import Freezer
     from MetaFiles import MetaFiles
 
@@ -243,6 +243,13 @@ def auto_update_context_on_debug():
         # reload on explicit view requests (e.g. not favicons):
         if request.endpoint in blog.view_functions:
             context.load()
+
+
+# Template additions:
+
+@blog.template_filter('templatize')
+def templatize(text, environment = {}):
+    return render_template_string(text, **environment)
 
 
 # Routes:
