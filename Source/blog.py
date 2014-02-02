@@ -97,7 +97,7 @@ DEFAULT_CONFIGURATION = {
 
 class Target(object):
     """
-    A target is a MetaFile wrapper with an additional 'path'.
+    A Target is a MetaFile wrapper with an additional 'path'.
     It represents a Post or a Page in the blog.
     """
     def __init__(self, metafile, path):
@@ -111,25 +111,6 @@ class Target(object):
     @property
     def body(self):
         return self.metafile.body
-
-
-class Targets(object):
-    """
-    Maintains a collection of Targets that can be iterated
-    and queried by path. Subclasses decide how to load content.
-    """
-    def __init__(self):
-        self.targets = []
-        self.targets_by_path = {}
-        self.metafiles = None
-
-    def __iter__(self):
-        """ Iterate all the targets. """
-        return iter(self.targets)
-
-    def __getitem__(self, path):
-        """ Return a given target by its path, or None when not found. """
-        return self.targets_by_path.get(path)
 
 
 def metafiles_as_targets(metafiles):
@@ -146,90 +127,79 @@ def metafiles_as_targets(metafiles):
         yield Target(metafile, path)
 
 
-class Pages(Targets):
-    """ Maintains a collection of standalone Pages in the blog. """
+class Context(object):
+    """ Maintains the collection of Pages and Posts in the blog. """
+
+    def __init__(self):
+        self.pages = []
+        self.posts = []
+
+        self.pages_by_path = {}
+        self.posts_by_path = {}
+
+        self._pages_metafiles = None
+        self._posts_metafiles = None
 
     def initialize(self, config):
         """ Configure context options from a given 'config' dictionary. """
-        self.metafiles = MetaFiles(
+        self._pages_metafiles = MetaFiles(
             root        = config['PAGE_ROOT'],
             extensions  = config['PAGE_EXTENSIONS'],
             encoding    = config['PAGE_ENCODING'],
             meta_render = config['PAGE_META_RENDERER'],
             body_render = config['PAGE_BODY_RENDERER'])
 
-    def load(self):
-        """
-        Reload all the pages in the blog.
-        On errors, the previous content is preserved.
-        """
-        pages = []
-        pages_by_path = {}
-
-        for page in metafiles_as_targets(self.metafiles):
-            pages.append(page)
-            pages_by_path[page.path] = page
-
-        self.targets = pages
-        self.targets_by_path = pages_by_path
-
-
-class Posts(Targets):
-    """ Maintains a collection of Posts in the blog. """
-
-    def initialize(self, config):
-        """ Configure context options from a given 'config' dictionary. """
-        self.metafiles = MetaFiles(
+        self._posts_metafiles = MetaFiles(
             root        = config['POST_ROOT'],
             extensions  = config['POST_EXTENSIONS'],
             encoding    = config['POST_ENCODING'],
             meta_render = config['POST_META_RENDERER'],
             body_render = config['POST_BODY_RENDERER'])
 
-    def load(self):
+    def load_pages(self):
         """
-        Reload all the posts in the blog and sort them by date.
-        Posts without date are skipped (considered drafts).
+        Load all the Pages in the blog.
+        Can be called multiple times to reload.
         On errors, the previous content is preserved.
         """
+        self._pages_metafiles.load()
+
+        pages = []
+        pages_by_path = {}
+
+        for page in metafiles_as_targets(self._pages_metafiles):
+            pages.append(page)
+            pages_by_path[page.path] = page
+
+        self.pages = pages
+        self.pages_by_path = pages_by_path
+
+    def load_posts(self):
+        """
+        Load all the posts in the blog and sort them by date.
+        Posts without date are skipped (considered drafts).
+        Can be called multiple times to reload.
+        On errors, the previous content is preserved.
+        """
+        self._posts_metafiles.load()
+
         posts = []
         posts_by_path = {}
 
-        for post in metafiles_as_targets(self.metafiles):
+        for post in metafiles_as_targets(self._posts_metafiles):
             if 'date' in post.meta:
                 posts.append(post)
                 posts_by_path[post.path] = post
 
         posts.sort(key = lambda post: post.meta['date'], reverse = True)
 
-        self.targets = posts
-        self.targets_by_path = posts_by_path
-
-
-class Context(object):
-    """ Maintains the collection of Pages and Posts in the blog. """
-
-    def __init__(self):
-        self.pages = Pages()
-        self.posts = Posts()
-
-    def initialize(self, config):
-        """ Configure context options from a given 'config' dictionary. """
-        self.pages.initialize(config)
-        self.posts.initialize(config)
+        self.posts = posts
+        self.posts_by_path = posts_by_path
 
     def load(self):
-        """ Reload all the Pages and Posts in the blog. """
-        self.pages.load()
-        self.posts.load()
-
-    def get_page(self, path):
-        """ Find a page by its path, or return None. """
-        return self.pages[path]
-
-    def get_post(self, path):
-        """ Find a post by its path, or return None. """
-        return self.posts[path]
+        """ Load all the pages and posts in the blog. """
+        self.load_pages()
+        self.load_posts()
 
     @property
     def environment(self):
@@ -237,7 +207,7 @@ class Context(object):
         Returns a dict containing all the data in Pages and Posts
         suitable for template rendering.
         """
-        return dict(pages = self.pages, posts = self.posts)
+        return { 'pages': self.pages, 'posts': self.posts }
 
     def render_template(self, template, **context):
         """
@@ -283,12 +253,12 @@ def index():
 
 @blog.route('/page/<path:path>/')
 def page(path):
-    page = context.get_page(path) or abort(404)
+    page = context.pages_by_path.get(path) or abort(404)
     return context.render_template('page.html', page = page)
 
 @blog.route('/post/<path:path>/')
 def post(path):
-    post = context.get_post(path) or abort(404)
+    post = context.posts_by_path.get(path) or abort(404)
     return context.render_template('post.html', post = post)
 
 
