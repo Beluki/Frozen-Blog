@@ -298,7 +298,7 @@ def make_parser():
         formatter_class = RawDescriptionHelpFormatter,
     )
 
-    group = parser.add_mutually_exclusive_group(required = False)
+    group = parser.add_mutually_exclusive_group(required = True)
 
     group.add_argument('-f', '--freeze',
         help = 'freeze the current site state to the output folder',
@@ -316,10 +316,6 @@ def make_parser():
 def main():
     parser = make_parser()
     options = parser.parse_args()
-
-    if not options.freeze and not options.server:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
 
     blog.config.from_pyfile('blog.conf', silent = True)
 
