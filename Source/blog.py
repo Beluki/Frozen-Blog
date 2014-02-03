@@ -132,10 +132,11 @@ class Context(object):
 
     def __init__(self):
         self.pages = []
-        self.posts = []
-
         self.pages_by_path = {}
+
+        self.posts = []
         self.posts_by_path = {}
+        self.posts_by_tag = {}
 
         self._pages_metafiles = None
         self._posts_metafiles = None
@@ -159,6 +160,7 @@ class Context(object):
     def load_pages(self):
         """
         Load all the Pages in the blog.
+
         Can be called multiple times to reload.
         On errors, the previous content is preserved.
         """
@@ -176,8 +178,12 @@ class Context(object):
 
     def load_posts(self):
         """
-        Load all the posts in the blog and sort them by date.
+        Load all the posts in the blog, sorting them by date
+        and grouping by tag.
+
         Posts without date are skipped (considered drafts).
+        Posts without tags are put in a default ['untagged'].
+
         Can be called multiple times to reload.
         On errors, the previous content is preserved.
         """
@@ -185,6 +191,7 @@ class Context(object):
 
         posts = []
         posts_by_path = {}
+        posts_by_tag = {}
 
         for post in metafiles_as_targets(self._posts_metafiles):
             if 'date' in post.meta:
@@ -193,8 +200,15 @@ class Context(object):
 
         posts.sort(key = lambda post: post.meta['date'], reverse = True)
 
+        for post in posts:
+            post.meta.setdefault('tags', ['untagged'])
+            for tag in post.meta['tags']:
+                posts_by_tag.setdefault(tag, [])
+                posts_by_tag[tag].append(post)
+
         self.posts = posts
         self.posts_by_path = posts_by_path
+        self.posts_by_tag = posts_by_tag
 
     def load(self):
         """ Load all the pages and posts in the blog. """
@@ -203,11 +217,15 @@ class Context(object):
 
     @property
     def environment(self):
-        """
-        Returns a dict containing all the data in Pages and Posts
-        suitable for template rendering.
-        """
-        return { 'pages': self.pages, 'posts': self.posts }
+        """ Returns a dict containing all our data, for template rendering. """
+        return {
+            'pages': self.pages,
+            'pages_by_path': self.pages_by_path,
+
+            'posts': self.posts,
+            'posts_by_path': self.posts_by_path,
+            'posts_by_tag': self.posts_by_tag,
+        }
 
     def render_template(self, template, **context):
         """
@@ -267,6 +285,15 @@ def page(path):
 def post(path):
     post = context.posts_by_path.get(path) or abort(404)
     return context.render_template('post.html', post = post)
+
+@blog.route('/tags/', defaults = { 'tag': None })
+@blog.route('/tags/<path:tag>/')
+def tags(tag):
+    if tag:
+        posts = context.posts_by_tag.get(tag) or abort(404)
+        return blog.context.render('tags.html', tag = tag, posts = posts)
+    else:
+        return blog.context.render('tags.html')
 
 
 # Running modes:
