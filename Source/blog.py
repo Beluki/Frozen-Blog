@@ -98,7 +98,7 @@ DEFAULT_CONFIGURATION = {
 class Target(object):
     """
     A Target is a MetaFile wrapper with an additional 'path'.
-    It represents a Post or a Page in the blog.
+    It represents a post or a page in the blog.
     """
     def __init__(self, metafile, path):
         self.metafile = metafile
@@ -117,7 +117,7 @@ def metafiles_as_targets(metafiles):
     """
     Iterate 'metafiles', yielding Target items with a 'path' from them.
     The 'path' is the full filepath *without extension* from the
-    metafiles root, using posix separators:
+    metafiles root, using posix separators.
     """
     for metafile in metafiles:
         fullbase, extension = os.path.splitext(metafile.filepath)
@@ -291,9 +291,9 @@ def post(path):
 def tags(tag):
     if tag:
         posts = context.posts_by_tag.get(tag) or abort(404)
-        return blog.context.render('tags.html', tag = tag, posts = posts)
+        return context.render('tags.html', tag = tag, posts = posts)
     else:
-        return blog.context.render('tags.html')
+        return context.render('tags.html')
 
 
 # Running modes:
