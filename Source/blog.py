@@ -59,7 +59,7 @@ def merge_dicts(a, b):
 # Renderers for metadata, page and post content:
 
 def meta_renderer(meta):
-    return yaml.load(meta)
+    return yaml.load(meta) or {}
 
 def page_renderer(body):
     return body
@@ -178,8 +178,7 @@ class Context(object):
 
     def load_posts(self):
         """
-        Load all the posts in the blog, sorting them by date
-        and grouping by tag.
+        Load all the posts in the blog, sorting by date and grouping by tag.
 
         Posts without date are skipped (considered drafts).
         Posts without tags are put in a default ['untagged'].
@@ -198,6 +197,7 @@ class Context(object):
                 posts.append(post)
                 posts_by_path[post.path] = post
 
+        # sort first so that tags have the post sorted too:
         posts.sort(key = lambda post: post.meta['date'], reverse = True)
 
         for post in posts:
@@ -219,12 +219,11 @@ class Context(object):
     def environment(self):
         """ Returns a dict containing all our data, for template rendering. """
         return {
-            'pages': self.pages,
-            'pages_by_path': self.pages_by_path,
-
-            'posts': self.posts,
-            'posts_by_path': self.posts_by_path,
-            'posts_by_tag': self.posts_by_tag,
+            'pages'         : self.pages,
+            'pages_by_path' : self.pages_by_path,
+            'posts'         : self.posts,
+            'posts_by_path' : self.posts_by_path,
+            'posts_by_tag'  : self.posts_by_tag,
         }
 
     def render_template(self, template, **context):
@@ -243,7 +242,7 @@ blog.config.update(DEFAULT_CONFIGURATION)
 context = Context()
 
 
-# Reloading:
+# Initialization and reloading:
 
 @blog.before_first_request
 def init_context():
@@ -253,7 +252,6 @@ def init_context():
 @blog.before_request
 def auto_update_context_on_debug():
     if blog.debug:
-
         # avoid reloading content on static files:
         if request.endpoint == 'static':
             return
@@ -267,6 +265,7 @@ def auto_update_context_on_debug():
 
 @blog.template_filter('templatize')
 def templatize(text, environment = {}):
+    """ Render 'text' as a template, using an optional 'environment'. """
     return render_template_string(text, **environment)
 
 
@@ -286,14 +285,14 @@ def post(path):
     post = context.posts_by_path.get(path) or abort(404)
     return context.render_template('post.html', post = post)
 
-@blog.route('/tags/', defaults = { 'tag': None })
+@blog.route('/tags/')
+def tags():
+    return context.render_template('tags.html')
+
 @blog.route('/tags/<path:tag>/')
-def tags(tag):
-    if tag:
-        posts = context.posts_by_tag.get(tag) or abort(404)
-        return context.render('tags.html', tag = tag, posts = posts)
-    else:
-        return context.render('tags.html')
+def tag(tag):
+    context.posts_by_tag.get(tag) or abort(404)
+    return context.render_template('tags.html', tag = tag)
 
 
 # Running modes:
