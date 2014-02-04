@@ -1,0 +1,23 @@
+
+{% from 'macros.html' import link_tag %}
+
+<div class="title">
+    {{ post.meta.title }}
+</div>
+
+<div class="subtitle">
+    {{ post.meta.date.strftime('%B %d, %Y') }}
+
+    <div class="multilink">
+        {% for tag in post.meta.tags %}
+            <a href="{{ link_tag(tag) }}">{{ tag }}</a>
+
+            {% if not loop.last %} | {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="content">
+    {{ post.body | templatize(post.meta) | safe }}
+</div>
+

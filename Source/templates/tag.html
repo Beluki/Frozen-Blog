@@ -1,0 +1,8 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+    {% set posts = posts_by_tag[tag] %}
+    {% include 'include-render-tag.html' %}
+{% endblock %}
+

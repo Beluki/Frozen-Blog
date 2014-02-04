@@ -7,6 +7,7 @@ A minimal static blog written with Frozen-Flask and MetaFiles.
 """
 
 
+import math
 import os
 import posixpath
 import sys
@@ -56,10 +57,24 @@ def merge_dicts(a, b):
     return dict(list(a.items()) + list(b.items()))
 
 
-# Renderers for metadata, page and post content:
+# Default metadata renderer, YAML:
+
+def validate_metadata(metadata):
+    """ Ensure that 'metadata' is either empty or a dict. """
+    if not metadata:
+        return {}
+
+    if not isinstance(metadata, dict):
+        raise ValueError('Invalid metadata, not a dict: %s' % metadata)
+
+    return metadata
 
 def meta_renderer(meta):
-    return yaml.load(meta) or {}
+    metadata = yaml.load(meta)
+    return validate_metadata(metadata)
+
+
+# Default body renderers, none for pages, markdown for posts:
 
 def page_renderer(body):
     return body
@@ -94,6 +109,8 @@ DEFAULT_CONFIGURATION = {
     'WWW_PORT': 8000,
 }
 
+
+# Data representation:
 
 class Target(object):
     """
@@ -197,7 +214,7 @@ class Context(object):
                 posts.append(post)
                 posts_by_path[post.path] = post
 
-        # sort first so that tags have the post sorted too:
+        # sort first so that tags have their posts sorted too:
         posts.sort(key = lambda post: post.meta['date'], reverse = True)
 
         for post in posts:
@@ -235,6 +252,39 @@ class Context(object):
         return render_template(template, **environment)
 
 
+# Pagination:
+
+class Pagination(object):
+    """
+    Represents the nth 'page' from 'iterable' when split in pages
+    containing at least 'per_page' items.
+    """
+    def __init__(self, iterable, page, per_page):
+        self.iterable = iterable
+        self.page = page
+        self.per_page = per_page
+
+    @property
+    def total_pages(self):
+        return int(math.ceil(len(self.iterable) / self.per_page))
+
+    @property
+    def has_prev(self):
+        return self.page > 1
+
+    @property
+    def has_next(self):
+        return self.page < self.total_pages
+
+    def __iter__(self):
+        index = self.page - 1
+
+        offset = index * self.per_page
+        length = offset + self.per_page
+
+        return iter(self.iterable[offset:length])
+
+
 # Flask application:
 
 blog = Flask(__name__)
@@ -252,6 +302,7 @@ def init_context():
 @blog.before_request
 def auto_update_context_on_debug():
     if blog.debug:
+
         # avoid reloading content on static files:
         if request.endpoint == 'static':
             return
@@ -265,15 +316,19 @@ def auto_update_context_on_debug():
 
 @blog.template_filter('templatize')
 def templatize(text, environment = {}):
-    """ Render 'text' as a template, using an optional 'environment'. """
     return render_template_string(text, **environment)
+
+@blog.template_filter('paginate')
+def paginate(iterable, page, per_page):
+    return Pagination(iterable, page, per_page)
 
 
 # Routes:
 
-@blog.route('/')
-def index():
-    return context.render_template('index.html')
+@blog.route('/', defaults = { 'page': 1 })
+@blog.route('/<int:page>/')
+def index(page):
+    return context.render_template('index.html', page = page)
 
 @blog.route('/page/<path:path>/')
 def page(path):
@@ -292,7 +347,7 @@ def tags():
 @blog.route('/tags/<path:tag>/')
 def tag(tag):
     context.posts_by_tag.get(tag) or abort(404)
-    return context.render_template('tags.html', tag = tag)
+    return context.render_template('tag.html', tag = tag)
 
 
 # Running modes:

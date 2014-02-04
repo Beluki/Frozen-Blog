@@ -1,0 +1,27 @@
+
+{% extends 'base.html' %}
+{% from 'macros.html' import link_index, link_post %}
+
+{% block content %}
+    {% set pagination = posts | paginate(page, 1) %}
+
+    {% for post in pagination %}
+        {% include 'include-render-post.html' %}
+
+        <div class="multilink">
+            <a href="{{ link_post(post) }}">permalink</a>
+        </div>
+    {% endfor %}
+
+    <div class="prevnext">
+        <ul>
+            {% if pagination.has_prev %}
+                <li> <a href="{{ link_index(page - 1) }}">&laquo; newer</a> </li>
+            {% endif %}
+            {% if pagination.has_next %}
+                <li> <a href="{{ link_index(page + 1) }}">older &raquo;</a> </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}
+
