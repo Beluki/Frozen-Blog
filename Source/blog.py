@@ -330,6 +330,10 @@ def paginate(iterable, page, per_page):
 def index(page):
     return context.render_template('index.html', page = page)
 
+@blog.route('/archive/')
+def archive():
+    return context.render_template('archive.html')
+
 @blog.route('/page/<path:path>/')
 def page(path):
     page = context.pages_by_path.get(path) or abort(404)
@@ -340,11 +344,7 @@ def post(path):
     post = context.posts_by_path.get(path) or abort(404)
     return context.render_template('post.html', post = post)
 
-@blog.route('/tags/')
-def tags():
-    return context.render_template('tags.html')
-
-@blog.route('/tags/<path:tag>/')
+@blog.route('/tag/<path:tag>/')
 def tag(tag):
     context.posts_by_tag.get(tag) or abort(404)
     return context.render_template('tag.html', tag = tag)

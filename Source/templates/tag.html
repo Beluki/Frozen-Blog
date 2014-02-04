@@ -1,8 +1,10 @@
 
-{% extends 'base.html' %}
+{% extends '_base.html' %}
+
+{# Use the same template for archives, but filter posts in the tag. #}
 
 {% block content %}
     {% set posts = posts_by_tag[tag] %}
-    {% include 'include-render-tag.html' %}
+    {% include '_render-archive.html' %}
 {% endblock %}
 

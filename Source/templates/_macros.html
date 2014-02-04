@@ -5,15 +5,15 @@
     {{- url_for('index', page = page) -}}
 {% endmacro %}
 
-{% macro link_tags() %}
-    {{- url_for('tags') -}}
+{% macro link_archive() %}
+    {{- url_for('archive') -}}
 {% endmacro %}
 
 {% macro link_page(page) %}
     {{- url_for('page', path = page.path) -}}
 {% endmacro %}
 
-{% macro link_page_at(path) %}
+{% macro link_page_by_path(path) %}
     {{- url_for('page', path = path) -}}
 {% endmacro %}
 
@@ -21,7 +21,7 @@
     {{- url_for('post', path = post.path) -}}
 {% endmacro %}
 
-{% macro link_post_at(path) %}
+{% macro link_post_by_path(path) %}
     {{- url_for('post', path = path) -}}
 {% endmacro %}
 

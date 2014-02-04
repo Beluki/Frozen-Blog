@@ -1,5 +1,5 @@
 
-{% from 'macros.html' import link_index, link_tags, link_page_at, link_static %}
+{% from '_macros.html' import link_index, link_archive, link_page_by_path, link_static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,8 +14,8 @@
         <div class="top-bar">
             <ul>
                 <li> <a href="{{ link_index() }}">index</a> </li>
-                <li> <a href="{{ link_tags() }}">archive</a> </li>
-                <li> <a href="{{ link_page_at('sample-page') }}">page</a> </li>
+                <li> <a href="{{ link_archive() }}">archive</a> </li>
+                <li> <a href="{{ link_page_by_path('sample-page') }}">page</a> </li>
             </ul>
         </div>
         <div class="wrapper">

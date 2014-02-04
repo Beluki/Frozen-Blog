@@ -1,12 +1,12 @@
 
-{% extends 'base.html' %}
-{% from 'macros.html' import link_index, link_post %}
+{% extends '_base.html' %}
+{% from '_macros.html' import link_index, link_post %}
 
 {% block content %}
     {% set pagination = posts | paginate(page, 1) %}
 
     {% for post in pagination %}
-        {% include 'include-render-post.html' %}
+        {% include '_render-post.html' %}
 
         <div class="multilink">
             <a href="{{ link_post(post) }}">permalink</a>
