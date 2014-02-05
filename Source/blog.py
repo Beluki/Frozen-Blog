@@ -279,8 +279,9 @@ class Pagination(object):
         """ True if there is a next page. """
         return self.page < self.total_pages
 
-    def elements(self):
-        """ Get all the items in our current page. """
+    @property
+    def items(self):
+        """ Get all the items from our iterable for the current page. """
         index = self.page - 1
 
         offset = index * self.per_page

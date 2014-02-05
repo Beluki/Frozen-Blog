@@ -6,7 +6,7 @@
     {% set pagination = posts | paginate(page, 1) %}
 
     {% if pagination %}
-        {% set posts = pagination.elements() %}
+        {% set posts = pagination.items %}
     {% endif %}
 
     {% for post in posts %}
@@ -23,6 +23,7 @@
                 {% if pagination.has_prev %}
                     <li> <a href="{{ link_index(page - 1) }}">&laquo; newer</a> </li>
                 {% endif %}
+
                 {% if pagination.has_next %}
                     <li> <a href="{{ link_index(page + 1) }}">older &raquo;</a> </li>
                 {% endif %}
