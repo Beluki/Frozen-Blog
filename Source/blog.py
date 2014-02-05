@@ -266,23 +266,27 @@ class Pagination(object):
 
     @property
     def total_pages(self):
+        """ Number of available pages. """
         return int(math.ceil(len(self.iterable) / self.per_page))
 
     @property
     def has_prev(self):
+        """ True if there is a previous page. """
         return self.page > 1
 
     @property
     def has_next(self):
+        """ True if there is a next page. """
         return self.page < self.total_pages
 
-    def __iter__(self):
+    def elements(self):
+        """ Get all the items in our current page. """
         index = self.page - 1
 
         offset = index * self.per_page
         length = offset + self.per_page
 
-        return iter(self.iterable[offset:length])
+        return self.iterable[offset:length]
 
 
 # Flask application:

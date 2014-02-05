@@ -5,7 +5,11 @@
 {% block content %}
     {% set pagination = posts | paginate(page, 1) %}
 
-    {% for post in pagination %}
+    {% if pagination %}
+        {% set posts = pagination.elements() %}
+    {% endif %}
+
+    {% for post in posts %}
         {% include '_render-post.html' %}
 
         <div class="multilink">
@@ -13,15 +17,17 @@
         </div>
     {% endfor %}
 
-    <div class="prevnext">
-        <ul>
-            {% if pagination.has_prev %}
-                <li> <a href="{{ link_index(page - 1) }}">&laquo; newer</a> </li>
-            {% endif %}
-            {% if pagination.has_next %}
-                <li> <a href="{{ link_index(page + 1) }}">older &raquo;</a> </li>
-            {% endif %}
-        </ul>
-    </div>
+    {% if pagination %}
+        <div class="prevnext">
+            <ul>
+                {% if pagination.has_prev %}
+                    <li> <a href="{{ link_index(page - 1) }}">&laquo; newer</a> </li>
+                {% endif %}
+                {% if pagination.has_next %}
+                    <li> <a href="{{ link_index(page + 1) }}">older &raquo;</a> </li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}
 
