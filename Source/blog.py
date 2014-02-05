@@ -100,6 +100,7 @@ DEFAULT_CONFIGURATION = {
     'POST_META_RENDERER': meta_renderer,
     'POST_BODY_RENDERER': post_renderer,
 
+    'FREEZER_BASE_URL': 'http://localhost/',
     'FREEZER_DESTINATION': 'build',
     'FREEZER_DESTINATION_IGNORE': ['.*'],
     'FREEZER_RELATIVE_URLS': False,
@@ -145,7 +146,7 @@ def metafiles_as_targets(metafiles):
 
 
 class Context(object):
-    """ Maintains the collection of Pages and Posts in the blog. """
+    """ Maintains the collection of pages and posts in the blog. """
 
     def __init__(self):
         self.pages = []
@@ -176,8 +177,7 @@ class Context(object):
 
     def load_pages(self):
         """
-        Load all the Pages in the blog.
-
+        Load all the pages in the blog.
         Can be called multiple times to reload.
         On errors, the previous content is preserved.
         """
@@ -196,10 +196,8 @@ class Context(object):
     def load_posts(self):
         """
         Load all the posts in the blog, sorting by date and grouping by tag.
-
         Posts without date are skipped (considered drafts).
         Posts without tags are put in a default ['untagged'].
-
         Can be called multiple times to reload.
         On errors, the previous content is preserved.
         """
@@ -245,7 +243,7 @@ class Context(object):
 
     def render_template(self, template, **context):
         """
-        Like Flask's 'render_template()' but includes our own environment.
+        Like Flask's 'render_template()' but includes our own environment
         as well as the variables passed as parameters.
         """
         environment = merge_dicts(self.environment, context)
@@ -271,12 +269,12 @@ class Pagination(object):
 
     @property
     def has_prev(self):
-        """ True if there is a previous page. """
+        """ True when there is a previous page. """
         return self.page > 1
 
     @property
     def has_next(self):
-        """ True if there is a next page. """
+        """ True when there is a next page. """
         return self.page < self.total_pages
 
     @property
