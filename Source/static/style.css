@@ -25,19 +25,18 @@ a {
     background-color: #ECECEC;
     font-size: 0.875em;
     height: 1.5em;
-    min-width: 675px;
+    line-height: 1.5em;
+    min-width: 48em;
     text-align: center;
 }
 
-.top-bar ul,
 .top-bar li {
     display: inline;
-    vertical-align: middle;
 }
 
 .top-bar a {
     color: #AAAABB;
-    margin: 0 2em 0 2em;
+    padding: 0 2em 0 2em;
 }
 
 .top-bar a:hover { color: #666; }
@@ -47,7 +46,8 @@ a {
 
 .wrapper {
     margin: 1.5em auto;
-    min-width: 675px;
+    max-width: 52em;
+    min-width: 42em;
     width: 65%;
 }
 
@@ -128,7 +128,6 @@ a {
     text-align: center;
 }
 
-.prevnext ul,
 .prevnext li {
     display: inline;
 }
@@ -138,9 +137,7 @@ a {
     margin: 0 2em 0 2em;
 }
 
-.prevnext a:hover {
-    color: #8C1636;
-}
+.prevnext a:hover { color: #8C1636; }
 
 
 /* Three column content (archives). */
