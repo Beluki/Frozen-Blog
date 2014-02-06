@@ -1,0 +1,20 @@
+
+CHANGELOG
+
+* 2014/02/05:
+
+    - Tested on IE6-IE11, Chrome, Firefox, Opera, Safari and multiple
+      tablets and mobile phones.
+
+    - Use line-height instead of vertical-align for the top bar.
+
+* 2014/02/04:
+
+    - Added pagination support as a template filter.
+
+    - Non-explicit templates (includes, macros) start with a dash.
+
+* 2014/02/03:
+
+    - Added tags support.
+
