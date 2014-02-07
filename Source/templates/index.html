@@ -1,6 +1,5 @@
 
 {% extends '_base.html' %}
-{% from '_macros.html' import url_index, url_post %}
 
 {% block content %}
     {% set pagination = posts | paginate(page, 1) %}

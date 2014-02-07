@@ -31,7 +31,7 @@ def errln(line):
 # Non-builtin imports:
 
 try:
-    from flask import Flask, abort, render_template, render_template_string, request
+    from flask import Flask, abort, render_template, render_template_string, request, url_for
     from flask_frozen import Freezer
     from MetaFiles import MetaFiles
 
@@ -324,6 +324,50 @@ def templatize(text, environment = {}):
 @blog.template_filter('paginate')
 def paginate(iterable, page, per_page):
     return Pagination(iterable, page, per_page)
+
+
+# Convenient url_for() wrappers:
+
+def url_index(page = None):
+    return url_for('index', page = page)
+
+def url_archive():
+    return url_for('archive')
+
+def url_page(page):
+    return url_for('page', path = page.path)
+
+def url_page_by_path(path):
+    return url_for('page', path = path)
+
+def url_post(post):
+    return url_for('post', path = post.path)
+
+def url_post_by_path(path):
+    return url_for('post', path = path)
+
+def url_tag(tag):
+    return url_for('tag', tag = tag)
+
+def url_static(filename):
+    return url_for('static', filename = filename)
+
+
+# Note that those are provided for both templates and pages/posts,
+# given 'templatize' is available:
+
+@blog.context_processor
+def url_for_wrappers():
+    return {
+        'url_index'        : url_index,
+        'url_archive'      : url_archive,
+        'url_page'         : url_page,
+        'url_page_by_path' : url_page_by_path,
+        'url_post'         : url_post,
+        'url_post_by_path' : url_post_by_path,
+        'url_tag'          : url_tag,
+        'url_static'       : url_static,
+    }
 
 
 # Routes:
