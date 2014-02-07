@@ -1,21 +1,21 @@
 
-{% from '_macros.html' import link_index, link_archive, link_page_by_path, link_static %}
+{% from '_macros.html' import url_index, url_archive, url_page_by_path, url_static %}
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <title>Your blog title</title>
-        <link rel="stylesheet" href="{{ link_static('style.css') }}" type="text/css">
-        <link rel="stylesheet" href="{{ link_static('codehilite.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_static('style.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_static('codehilite.css') }}" type="text/css">
     </head>
 
     <body>
         <div class="top-bar">
             <ul>
-                <li> <a href="{{ link_index() }}">index</a> </li>
-                <li> <a href="{{ link_archive() }}">archive</a> </li>
-                <li> <a href="{{ link_page_by_path('sample-page') }}">page</a> </li>
+                <li> <a href="{{ url_index() }}">index</a> </li>
+                <li> <a href="{{ url_archive() }}">archive</a> </li>
+                <li> <a href="{{ url_page_by_path('sample-page') }}">page</a> </li>
             </ul>
         </div>
         <div class="wrapper">

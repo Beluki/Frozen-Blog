@@ -1,35 +1,35 @@
 
 {# Helpful macros to produce links. #}
 
-{% macro link_index(page = None) %}
+{% macro url_index(page = None) %}
     {{- url_for('index', page = page) -}}
 {% endmacro %}
 
-{% macro link_archive() %}
+{% macro url_archive() %}
     {{- url_for('archive') -}}
 {% endmacro %}
 
-{% macro link_page(page) %}
+{% macro url_page(page) %}
     {{- url_for('page', path = page.path) -}}
 {% endmacro %}
 
-{% macro link_page_by_path(path) %}
+{% macro url_page_by_path(path) %}
     {{- url_for('page', path = path) -}}
 {% endmacro %}
 
-{% macro link_post(post) %}
+{% macro url_post(post) %}
     {{- url_for('post', path = post.path) -}}
 {% endmacro %}
 
-{% macro link_post_by_path(path) %}
+{% macro url_post_by_path(path) %}
     {{- url_for('post', path = path) -}}
 {% endmacro %}
 
-{% macro link_tag(tag) %}
+{% macro url_tag(tag) %}
     {{- url_for('tag', tag = tag) -}}
 {% endmacro %}
 
-{% macro link_static(filename) %}
+{% macro url_static(filename) %}
     {{- url_for('static', filename = filename) -}}
 {% endmacro %}
 

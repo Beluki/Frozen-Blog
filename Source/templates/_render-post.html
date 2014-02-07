@@ -1,5 +1,5 @@
 
-{% from '_macros.html' import link_tag %}
+{% from '_macros.html' import url_tag %}
 
 <div class="title">
     {{ post.meta.title }}
@@ -10,7 +10,7 @@
 
     <div class="multilink">
         {% for tag in post.meta.tags %}
-            <a href="{{ link_tag(tag) }}">{{ tag }}</a>
+            <a href="{{ url_tag(tag) }}">{{ tag }}</a>
 
             {% if not loop.last %} | {% endif %}
         {% endfor %}
