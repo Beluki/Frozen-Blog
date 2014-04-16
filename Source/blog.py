@@ -89,13 +89,13 @@ DEFAULT_CONFIGURATION = {
     'DEBUG': True,
 
     'PAGE_ROOT': 'page',
-    'PAGE_EXTENSIONS': ('.html'),
+    'PAGE_EXTENSIONS': '.html',
     'PAGE_ENCODING': 'utf-8-sig',
     'PAGE_META_RENDERER': meta_renderer,
     'PAGE_BODY_RENDERER': page_renderer,
 
     'POST_ROOT': 'post',
-    'POST_EXTENSIONS': ('.markdown'),
+    'POST_EXTENSIONS': '.markdown',
     'POST_ENCODING': 'utf-8-sig',
     'POST_META_RENDERER': meta_renderer,
     'POST_BODY_RENDERER': post_renderer,
