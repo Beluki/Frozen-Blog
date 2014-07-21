@@ -1,6 +1,12 @@
 
 CHANGELOG
 
+* 2014/07/21:
+
+    - Revised. Working on Python 3.4.1, Flask 0.10.1, Frozen-Flask 0.11
+      Markdown 2.4.1, Pygments 1.6, PyYAML 3.11.
+      No changes needed.
+
 * 2014/02/05:
 
     - Tested on IE6-IE11, Chrome, Firefox, Opera, Safari and multiple
