@@ -1,5 +1,5 @@
 
-### About
+## About
 
 Frozen-Blog is a lightweight static blog, written in Python 3 as a [Flask][]
 application. You know the gist: write posts in a markup language
@@ -24,7 +24,7 @@ Finally, because it uses [MetaFiles][], pages and posts are lazily cached and
 reloaded when in live mode. This makes auto-regeneration fast, even with
 thousands of posts.
 
-### Installation and usage
+## Installation and usage
 
 To install, make sure that you are using Python 3 and install the dependencies.
 You need [Frozen-Flask][], [Markdown][], [MetaFiles][], and [PyYAML][]. After
@@ -44,7 +44,7 @@ See `blog.conf` and `freezing.conf` for configuration options (you can also
 change those while live, the server will restart itself). The first one is always
 loaded, `freezing.conf` is only loaded when freezing.
 
-### Portability
+## Portability
 
 Frozen-Blog is tested on Windows 7 and 8 and on Debian (both x86 and x86-64)
 using Python 3.3+, Flask 0.10+ and Frozen-Flask 0.11+. I always use the latest
@@ -58,13 +58,13 @@ The theme validates as standard HTML5 and CSS3. It looks the same on every
 browser (including IE6+). It uses em-based sizes. It does not depend on Javascript
 or any external CSS framework. Those are easy to add when needed.
 
-### Status
+## Status
 
 This program is feature-complete and has no known bugs. Unless new issues
 are reported or requests are made I plan no further development on it other
 than maintenance.
 
-### License
+## License
 
 Like all my hobby projects, this is Free Software. See the [Documentation][]
 folder for more information. No warranty though.
