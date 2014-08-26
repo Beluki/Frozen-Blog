@@ -8,7 +8,7 @@ CHANGELOG
 
     - The route for tags is now '/archive/<tag>'.
       Both url_tag() and 'tag.html' as a template have been removed.
-      Use 'url_archive()' and 'use_archive(tag)' instead.
+      Use 'url_archive()' and 'url_archive(tag)' instead.
 
 * 2014/07/21:
 
