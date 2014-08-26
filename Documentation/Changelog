@@ -1,6 +1,13 @@
 
 CHANGELOG
 
+* 2014/08/27:
+
+    - Avoid reloading post/pages when freezing.
+
+    - DEBUG is now always True by default when freezing
+      because it's as fast as disabling it.
+
 * 2014/08/26:
 
     - Prefix program name on output to stderr.

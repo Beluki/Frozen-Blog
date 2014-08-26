@@ -12,6 +12,7 @@ import os
 import posixpath
 import sys
 import time
+import traceback
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
@@ -296,6 +297,8 @@ class Pagination(object):
 
 blog = Flask(__name__)
 blog.config.update(DEFAULT_CONFIGURATION)
+blog.freezing = False
+
 context = Context()
 
 
@@ -307,16 +310,19 @@ def init_context():
     context.load()
 
 @blog.before_request
-def auto_update_context_on_debug():
-    if blog.debug:
+def auto_update_context():
 
-        # avoid reloading content on static files:
-        if request.endpoint == 'static':
-            return
+    # avoid reloading when freezing:
+    if blog.freezing:
+        return
 
-        # reload on explicit view requests (e.g. not favicons):
-        if request.endpoint in blog.view_functions:
-            context.load()
+    # avoid reloading on static files:
+    if request.endpoint == 'static':
+        return
+
+    # reload on explicit view requests only (e.g. not favicons):
+    if request.endpoint in blog.view_functions:
+        context.load()
 
 
 # Template additions:
@@ -401,17 +407,24 @@ def run_freezer():
     """ Freeze the current site state to the output folder. """
     blog.config.from_pyfile('freezing.conf', silent = True)
 
-    if blog.debug:
-        warnln('Freezing in debug mode is slow.')
-        warnln('Set DEBUG = False in freezing.conf for a speed boost.')
+    try:
+        outln('Freezing...')
 
-    outln('Freezing...')
+        start = time.clock()
+        total = Freezer(blog).freeze()
 
-    start = time.clock()
-    total = Freezer(blog).freeze()
+        outln('Frozen: %s items.' % len(total))
+        outln('Time: %s seconds.' % (time.clock() - start))
 
-    outln('Frozen: %s items.' % len(total))
-    outln('Time: %s seconds.' % (time.clock() - start))
+    except Exception as err:
+        errln('Exception while freezing: %s' % str(err))
+
+        if not blog.debug:
+            warnln('The following traceback is not comprehensive.')
+            warnln('Set DEBUG = True in freezing.conf for a more detailed traceback.')
+
+        errln(traceback.format_exc())
+        sys.exit(1)
 
 
 def run_server():
@@ -453,9 +466,11 @@ def main():
     blog.config.from_pyfile('blog.conf', silent = True)
 
     if options.server:
+        blog.freezing = False
         run_server()
 
     if options.freeze:
+        blog.freezing = True
         run_freezer()
 
 
