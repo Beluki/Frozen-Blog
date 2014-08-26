@@ -13,7 +13,7 @@
     <div class="three-column">
         <div class="left">
             {% call(tag) listing(posts_by_tag | sort) %}
-                <a href="{{ url_tag(tag) }}">{{ tag }}</a>
+                <a href="{{ url_archive(tag) }}">{{ tag }}</a>
             {% endcall %}
         </div>
 

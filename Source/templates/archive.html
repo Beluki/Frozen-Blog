@@ -2,6 +2,10 @@
 {% extends '_base.html' %}
 
 {% block content %}
+    {% if tag %}
+        {% set posts = posts_by_tag[tag] %}
+    {% endif %}
+
     {% include '_render-archive.html' %}
 {% endblock %}
 

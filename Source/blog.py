@@ -20,12 +20,17 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 def outln(line):
     """ Write 'line' to stdout, using the platform encoding and newline format. """
-    print(line)
+    print(line, flush = True)
 
 
 def errln(line):
     """ Write 'line' to stderr, using the platform encoding and newline format. """
-    print(line, file = sys.stderr)
+    print('blog.py: error:', line, file = sys.stderr, flush = True)
+
+
+def warnln(line):
+    """ Like errln() but for warning messages. """
+    print('blog.py: warning:', line, file = sys.stderr, flush = True)
 
 
 # Non-builtin imports:
@@ -59,19 +64,18 @@ def merge_dicts(a, b):
 
 # Default metadata renderer, YAML:
 
-def validate_metadata(metadata):
-    """ Ensure that 'metadata' is either empty or a dict. """
-    if not metadata:
-        return {}
-
-    if not isinstance(metadata, dict):
-        raise ValueError('Invalid metadata, not a dict: %s' % metadata)
-
-    return metadata
-
 def meta_renderer(meta):
     metadata = yaml.load(meta)
-    return validate_metadata(metadata)
+
+    # empty metadata:
+    if metadata is None:
+        return {}
+
+    # dict?
+    if not isinstance(metadata, dict):
+        raise ValueError('Invalid metadata, not a dict: %s' % str(metadata))
+
+    return metadata
 
 
 # Default body renderers, none for pages, markdown for posts:
@@ -238,7 +242,7 @@ class Context(object):
             'pages_by_path' : self.pages_by_path,
             'posts'         : self.posts,
             'posts_by_path' : self.posts_by_path,
-            'posts_by_tag'  : self.posts_by_tag,
+            'posts_by_tag'  : self.posts_by_tag
         }
 
     def render_template(self, template, **context):
@@ -331,8 +335,8 @@ def paginate(iterable, page, per_page):
 def url_index(page = None):
     return url_for('index', page = page)
 
-def url_archive():
-    return url_for('archive')
+def url_archive(tag = None):
+    return url_for('archive', tag = tag)
 
 def url_page(page):
     return url_for('page', path = page.path)
@@ -345,9 +349,6 @@ def url_post(post):
 
 def url_post_by_path(path):
     return url_for('post', path = path)
-
-def url_tag(tag):
-    return url_for('tag', tag = tag)
 
 def url_static(filename):
     return url_for('static', filename = filename)
@@ -365,36 +366,33 @@ def url_for_wrappers():
         'url_page_by_path' : url_page_by_path,
         'url_post'         : url_post,
         'url_post_by_path' : url_post_by_path,
-        'url_tag'          : url_tag,
         'url_static'       : url_static,
     }
 
 
 # Routes:
 
-@blog.route('/', defaults = { 'page': 1 })
+@blog.route('/')
 @blog.route('/<int:page>/')
-def index(page):
+def index(page = 1):
     return context.render_template('index.html', page = page)
 
 @blog.route('/archive/')
-def archive():
-    return context.render_template('archive.html')
+@blog.route('/archive/<tag>/')
+def archive(tag = None):
+    if tag is not None and not tag in context.posts_by_tag:
+        abort(404)
+    return context.render_template('archive.html', tag = tag)
 
 @blog.route('/page/<path:path>/')
 def page(path):
-    page = context.pages_by_path.get(path) or abort(404)
-    return context.render_template('page.html', page = page)
+    current_page = context.pages_by_path.get(path) or abort(404)
+    return context.render_template('page.html', page = current_page)
 
 @blog.route('/post/<path:path>/')
 def post(path):
-    post = context.posts_by_path.get(path) or abort(404)
-    return context.render_template('post.html', post = post)
-
-@blog.route('/tag/<path:tag>/')
-def tag(tag):
-    context.posts_by_tag.get(tag) or abort(404)
-    return context.render_template('tag.html', tag = tag)
+    current_post = context.posts_by_path.get(path) or abort(404)
+    return context.render_template('post.html', post = current_post)
 
 
 # Running modes:
@@ -404,8 +402,8 @@ def run_freezer():
     blog.config.from_pyfile('freezing.conf', silent = True)
 
     if blog.debug:
-        errln('Freezing in debug mode is slow.')
-        errln('Set DEBUG = False in freezing.conf for a speed boost.')
+        warnln('Freezing in debug mode is slow.')
+        warnln('Set DEBUG = False in freezing.conf for a speed boost.')
 
     outln('Freezing...')
 

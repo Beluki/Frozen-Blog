@@ -27,8 +27,10 @@ thousands of posts.
 ## Installation and usage
 
 To install, make sure that you are using Python 3 and install the dependencies.
-You need [Frozen-Flask][], [Markdown][], [MetaFiles][], and [PyYAML][]. After
-that, clone this repository and run the builtin web server:
+You need [Frozen-Flask][], [Markdown][], [MetaFiles][], and [PyYAML][]. Install
+[Pygments][] for syntax-highlighting (optional).
+
+After that, clone this repository and run the builtin web server:
 
 ```bash
 $ blog.py -s
@@ -74,6 +76,7 @@ folder for more information. No warranty though.
 [Jinja2]: https://pypi.python.org/pypi/Flask
 [Markdown]: https://pypi.python.org/pypi/Markdown
 [MetaFiles]: https://github.com/Beluki/MetaFiles
+[Pygments]: https://pypi.python.org/pypi/Pygments
 [PyYAML]: https://pypi.python.org/pypi/PyYAML
 
 [Documentation]: https://github.com/Beluki/Frozen-Blog/tree/master/Documentation

@@ -1,6 +1,15 @@
 
 CHANGELOG
 
+* 2014/08/26:
+
+    - Prefix program name on output to stderr.
+      e.g. 'blog.py: error: message...'
+
+    - The route for tags is now '/archive/<tag>'.
+      Both url_tag() and 'tag.html' as a template have been removed.
+      Use 'url_archive()' and 'use_archive(tag)' instead.
+
 * 2014/07/21:
 
     - Revised. Working on Python 3.4.1, Flask 0.10.1, Frozen-Flask 0.11

@@ -8,7 +8,7 @@
 
     <div class="multilink">
         {% for tag in post.meta.tags %}
-            <a href="{{ url_tag(tag) }}">{{ tag }}</a>
+            <a href="{{ url_archive(tag) }}">{{ tag }}</a>
 
             {% if not loop.last %} | {% endif %}
         {% endfor %}
