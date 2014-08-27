@@ -4,10 +4,11 @@ tags: ['blogging', 'meta']
 
 Welcome!
 
-This is a dummy post. It's included just so that you can see what everything looks like
-when there is content in the blog. Feel free to edit or delete it.
+This is a dummy post. It's included just so that you can see what
+everything looks like when there is content in the blog. Feel free
+to edit or delete it.
 
-Here is some syntax-highlighted code (from Frozen-Blog itself). The width of the site
+Here is some syntax-highlighted code. The width of the site
 should allow for a line-length of 80 characters.
 
     ::python
