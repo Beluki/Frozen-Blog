@@ -3,6 +3,12 @@ CHANGELOG
 
 * 2014/08/27:
 
+    - Bugfix: 'FREEZER_RELATIVE_URLS' did not work.
+      The url_for() wrappers now use either Flask's 'url_for()' or
+      Frozen-Flask's 'relative_url_for()' when appropriate.
+
+    - Major refactoring.
+
     - Avoid reloading post/pages when freezing.
 
     - DEBUG is now always True by default when freezing
