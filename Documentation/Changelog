@@ -1,6 +1,15 @@
 
 CHANGELOG
 
+* 2014/08/29:
+
+    - Bugfix: pagination from page 2 to index is now correct.
+      This bug was introduced during refactoring in the last release.
+
+    - 'FREEZER_RELATIVE_URLS' is now ignored when using '--server'.
+
+    - Changes to 'freezing.conf' no longer cause the server to auto-reload.
+
 * 2014/08/27:
 
     - Bugfix: 'FREEZER_RELATIVE_URLS' did not work.

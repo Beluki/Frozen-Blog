@@ -74,7 +74,7 @@ def default_meta_renderer(meta):
 
     # dict?
     if not isinstance(metadata, dict):
-        raise ValueError('Invalid metadata, not a dict: %s' % str(metadata))
+        raise ValueError('Invalid metadata, not a dict: {}'.format(metadata))
 
     return metadata
 
@@ -251,10 +251,10 @@ class Pagination(object):
         """ Get all the items from our iterable for the current page. """
         index = self.page - 1
 
-        offset = index * self.per_page
-        length = offset + self.per_page
+        start = index * self.per_page
+        end = start + self.per_page
 
-        return self.iterable[offset:length]
+        return self.iterable[start:end]
 
 
 # Actual blog application:
@@ -336,10 +336,11 @@ class Blog(object):
         """
         Add convenient url_for() shortcuts.
         """
+
         # python code is unaffected by Frozen-Flask unless
         # it explicitly uses relative_url_for(), so check:
 
-        if self.app.config['FREEZER_RELATIVE_URLS']:
+        if self.freezing and self.app.config['FREEZER_RELATIVE_URLS']:
             current_url_for = relative_url_for
         else:
             current_url_for = url_for
@@ -381,7 +382,7 @@ class Blog(object):
         """
         Add routes for the index, archive, pages and posts.
         """
-        @self.app.route('/')
+        @self.app.route('/', defaults = { 'page': 1 })
         @self.app.route('/<int:page>/')
         def index(page = 1):
             return self.render_template('index.html', page = page)
@@ -432,7 +433,7 @@ class Blog(object):
                      port = self.app.config['WWW_PORT'],
 
                      # also reload on configuration file changes:
-                     extra_files = ['blog.conf', 'freezing.conf'])
+                     extra_files = ['blog.conf'])
 
     def freeze(self):
         """
@@ -449,11 +450,11 @@ class Blog(object):
             start = time.clock()
             total = Freezer(self.app).freeze()
 
-            outln('Frozen: %s items.' % len(total))
-            outln('Time: %s seconds.' % (time.clock() - start))
+            outln('Frozen: {} items.'.format(len(total)))
+            outln('Time: {:.3} seconds.'.format(time.clock() - start))
 
         except Exception as err:
-            errln('Exception while freezing: %s' % str(err))
+            errln('Exception while freezing: {}'.format(err))
 
             if not self.app.debug:
                 warnln('The following traceback is not comprehensive.')
