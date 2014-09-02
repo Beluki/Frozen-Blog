@@ -26,7 +26,7 @@ thousands of posts.
 
 ## Installation and usage
 
-To install, make sure that you are using Python 3 and install the dependencies.
+To install, make sure that you are using Python 3.3+ and install the dependencies.
 You need [Frozen-Flask][], [Markdown][], [MetaFiles][], and [PyYAML][]. Install
 [Pygments][] for syntax-highlighting (optional).
 
@@ -50,7 +50,7 @@ loaded, `freezing.conf` is only loaded when freezing.
 
 Frozen-Blog is tested on Windows 7 and 8 and on Debian (both x86 and x86-64)
 using Python 3.3+, Flask 0.10+ and Frozen-Flask 0.11+. I always use the latest
-MetaFiles from git. Python 2.x is not supported.
+MetaFiles from git. Older versions are not supported.
 
 The encoding for pages and posts is UTF-8 with an optional BOM signature. It can
 be changed in the configuration files. Input can use any newline format. The output
@@ -62,9 +62,10 @@ or any external CSS framework. Those are easy to add when needed.
 
 ## Status
 
-This program is feature-complete and has no known bugs. Unless new issues
-are reported or requests are made I plan no further development on it other
-than maintenance.
+This program is finished!
+
+Frozen-Blog is feature-complete and has no known bugs. Unless issues are reported
+I plan no further development on it other than maintenance.
 
 ## License
 
