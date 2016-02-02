@@ -51,11 +51,11 @@ should allow for a line-length of 80 characters.</p>
 <span class="k">def</span> <span class="nf">auto_update_context_on_debug</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">blog</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
 
-        <span class="c"># avoid reloading content on static files:</span>
-        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">==</span> <span class="s">&#39;static&#39;</span><span class="p">:</span>
+        <span class="c1"># avoid reloading content on static files:</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">==</span> <span class="s1">&#39;static&#39;</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="c"># reload on explicit view requests (e.g. not favicons):</span>
+        <span class="c1"># reload on explicit view requests (e.g. not favicons):</span>
         <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">endpoint</span> <span class="ow">in</span> <span class="n">blog</span><span class="o">.</span><span class="n">view_functions</span><span class="p">:</span>
             <span class="n">context</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 </pre></div>
