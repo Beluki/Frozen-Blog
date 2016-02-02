@@ -1,6 +1,11 @@
 
 CHANGELOG
 
+* 2016/02/02:
+
+    - Revised. Working on Python 3.5.0, Flask 0.10.1, Frozen-Flask 0.12,
+      Markdown 2.6.5, PyYAML 3.11, Pygments 2.1.
+
 * 2014/08/29:
 
     - Bugfix: pagination from page 2 to index is now correct.

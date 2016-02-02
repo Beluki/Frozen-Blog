@@ -42,9 +42,12 @@ Edit pages and posts, tinker with templates, modify anything. All changes
 will be available instantly, just refresh your web browser. When ready,
 issue `blog.py -f` to actually freeze the blog to disk.
 
-See `blog.conf` and `freezing.conf` for configuration options (you can also
+See [blog.conf][] and [freezing.conf][] for configuration options (you can also
 change those while live, the server will restart itself). The first one is always
 loaded, `freezing.conf` is only loaded when freezing.
+
+[blog.conf]: Source/blog.conf
+[freezing.conf]: Source/freezing.conf
 
 ## Portability
 
@@ -80,5 +83,5 @@ folder for more information. No warranty though.
 [Pygments]: https://pypi.python.org/pypi/Pygments
 [PyYAML]: https://pypi.python.org/pypi/PyYAML
 
-[Documentation]: https://github.com/Beluki/Frozen-Blog/tree/master/Documentation
+[Documentation]: Documentation
 
